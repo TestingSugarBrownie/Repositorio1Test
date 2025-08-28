@@ -1,48 +1,36 @@
 pipeline {
-    agent any
-    
+    agent { label 'docker-agent' }
+
     stages {
-        stage('Checkout') {
+        stage('Preparación') {
             steps {
-                echo 'Código descargado desde GitHub'
-                // El checkout se hace automáticamente
+                echo "Iniciando build en agente Docker dinámico..."
             }
         }
-        
-        stage('Build') {
+
+        stage('Información del agente') {
             steps {
-                echo 'Construyendo el proyecto...'
-                // Aquí irían tus comandos de build
-                sh 'echo "Build completado"'
+                sh '''
+                  echo "=== HOSTNAME ==="
+                  hostname
+                  echo "=== USUARIO ==="
+                  whoami
+                  echo "=== SISTEMA ==="
+                  cat /etc/os-release || uname -a
+                '''
             }
         }
-        
-        stage('Test') {
+
+        stage('Prueba de build') {
             steps {
-                echo 'Ejecutando tests...'
-                // Aquí irían tus tests
-                sh 'echo "Tests completados"'
-            }
-        }
-        
-        stage('Deploy') {
-            steps {
-                echo 'Desplegando...'
-                // Aquí iría tu deployment
-                sh 'echo "Deploy completado"'
+                sh 'echo "Compilando proyecto de ejemplo 🚀"'
             }
         }
     }
-    
+
     post {
         always {
-            echo 'Pipeline completado'
-        }
-        success {
-            echo 'Pipeline exitoso!'
-        }
-        failure {
-            echo 'Pipeline falló'
+            echo "Build finalizado. El contenedor del agente será destruido automáticamente."
         }
     }
 }
